@@ -364,8 +364,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   islandPrefab: {fileID: 3932250422119294094, guid: 13f7d996ac14f6d41aa88d0f2974245b, type: 3}
-  numberOfIslands: 3
-  numberOfStickmanColors: 2
+  numberOfIslands: 5
+  numberOfStickmanColors: 3
   islands: []
 --- !u!114 &1334985111
 MonoBehaviour:

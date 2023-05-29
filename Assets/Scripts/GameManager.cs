@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         bridgeManager = new BridgeManager();
-        islandManager = new IslandManager();
+        islandManager = new IslandManager(bridgeManager);
         levelManager = new LevelManager(numberOfIslands, numberOfStickmanColors);
 
         StartNewLevel(1);

@@ -1,10 +1,17 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class IslandManager
 {
     private List<Island> activeIslands = new List<Island>();
     private Island firstSelectedIsland;
+    private BridgeManager bridgeManager;
+
+    public IslandManager(BridgeManager bridgeManager)
+    {
+        this.bridgeManager = bridgeManager;
+    }
 
     public void HandleIslandClick(Island clickedIsland)
     {
@@ -33,13 +40,13 @@ public class IslandManager
                 {
                     activeIslands.Add(secondSelectedIsland);
                     RaiseIsland(secondSelectedIsland);
-                    DrawBridgeBetweenIslands(firstSelectedIsland, secondSelectedIsland);
+                    bridgeManager.DrawBridgeBetweenIslands(firstSelectedIsland, secondSelectedIsland);
                     MoveStickmansToNextIsland(firstSelectedIsland, secondSelectedIsland);
                 }
 
                 // Deselect both islands
-                LowerIsland(firstSelectedIsland);
-                LowerIsland(secondSelectedIsland);
+                //LowerIsland(firstSelectedIsland);
+                //LowerIsland(secondSelectedIsland);
                 activeIslands.Clear();
             }
         }
@@ -64,30 +71,43 @@ public class IslandManager
         return true;
     }
 
-    private void DrawBridgeBetweenIslands(Island firstIsland, Island secondIsland)
-    {
-        // Implement the logic to draw a bridge between the islands
-        // You can create a bridge game object or modify the island visuals to indicate the bridge
-    }
-
     private void MoveStickmansToNextIsland(Island firstIsland, Island secondIsland)
     {
-        // Implement the logic to move stickmans from the first island to the second island
-        // You can iterate through the tiles of the first island and check the highest indexed column
-        // Move stickmans of the same color from the highest indexed column to the second island using the bridge/pathway
+        // Get the highest indexed column in the first island
+        int highestColumnIndex = firstIsland.GetHighestIndexedColumn();
+        int lowestColumnIndex = secondIsland.GetLowestIndexedColumn();
+
+        // Get the stickmans from the highest column in the first island
+        List<Stickman> stickmansToMove = firstIsland.GetStickmansInColumn(highestColumnIndex);
+
+        for(int i = 0; i < stickmansToMove.Count; i++)
+        {
+            Stickman stickman = stickmansToMove[i];
+            Tile startTile = firstIsland.tiles[highestColumnIndex, i];
+            Tile endTile = secondIsland.tiles[lowestColumnIndex, i];
+            
+            // Calculate the path for the stickman to walk on the bridge
+            List<Vector3> path = new List<Vector3>();
+            path.Add(startTile.transform.position);
+            path.AddRange(bridgeManager.GetBridgePath(firstIsland, secondIsland));
+            path.Add(endTile.transform.position);
+
+            // Start the stickman walking along the path
+            stickman.StartWalking(path, bridgeManager,firstIsland, secondIsland, lowestColumnIndex , i);
+
+            // Remove the stickman from the first island
+            firstIsland.RemoveStickman(stickman, startTile);
+            endTile.SetOccupied(true);
+        }
     }
 
     private void RaiseIsland(Island island)
     {
-        // Implement the logic to raise the island
-        // You can modify the Island class to include a method for raising the island
         island.RaiseIsland();
     }
 
     private void LowerIsland(Island island)
     {
-        // Implement the logic to lower the island
-        // You can modify the Island class to include a method for lowering the island
         island.LowerIsland();
     }
 }

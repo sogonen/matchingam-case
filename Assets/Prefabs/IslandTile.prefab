@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1840625961156474721}
   - component: {fileID: 1870070360877197619}
   - component: {fileID: 1860288093559674051}
-  - component: {fileID: 7610204829201038482}
   m_Layer: 0
   m_Name: IslandBottom
   m_TagString: Untagged
@@ -84,19 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &7610204829201038482
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1838474121846007071}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &1853928095411493043
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,7 +94,6 @@ GameObject:
   - component: {fileID: 1850941524900335083}
   - component: {fileID: 1858618987556602687}
   - component: {fileID: 1867742028847664335}
-  - component: {fileID: 6888987448635911776}
   m_Layer: 0
   m_Name: IslandTop
   m_TagString: Untagged
@@ -181,19 +166,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6888987448635911776
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1853928095411493043}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 0.19999999, z: 1}
-  m_Center: {x: 0, y: 0.099999994, z: 0}
 --- !u!1 &4554730025642586472
 GameObject:
   m_ObjectHideFlags: 0
@@ -204,6 +176,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8832581941137887860}
   - component: {fileID: 8272282401067965975}
+  - component: {fileID: -5579017616895215946}
   m_Layer: 0
   m_Name: IslandTile
   m_TagString: Untagged
@@ -241,3 +214,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   position: {x: 0, y: 0, z: 0}
+  currentStickman: {fileID: 0}
+--- !u!65 &-5579017616895215946
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4554730025642586472}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.2, z: 1}
+  m_Center: {x: 0, y: 0.6, z: 0}

@@ -3,7 +3,8 @@ public class Tile : MonoBehaviour
 {
     public Vector3 position; // Position in world space
     public Stickman currentStickman;
-
+    public bool isOccupied;
+    
     public void SetStickman(Stickman stickman, Island island)
     {
         // If there's already a stickman here, destroy it
@@ -20,8 +21,20 @@ public class Tile : MonoBehaviour
         stickman.transform.localPosition = new Vector3(0, 1.2f, 0);
 
         // Rotate the stickman towards the island's forward direction
-        Vector3 targetForward = island.transform.forward;
-        stickman.transform.rotation = Quaternion.LookRotation(targetForward);
+        Vector3 targetForward = island.transform.right;
+        stickman.transform.forward = targetForward;
+    }
+    
+    public void SetOccupied(bool occupied)
+    {
+        isOccupied = occupied;
+        if(!occupied)
+            currentStickman = null;
+    }
+    
+    public bool IsOccupied
+    {
+        get { return isOccupied; }
     }
     
     public Stickman GetStickman()
@@ -29,8 +42,8 @@ public class Tile : MonoBehaviour
         return currentStickman;
     }
     
-    public bool HasStickman()
+    public bool HasStickman
     {
-        return currentStickman != null;
+        get { return currentStickman != null;}
     }
 }

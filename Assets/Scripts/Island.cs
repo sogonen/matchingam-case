@@ -14,7 +14,7 @@ public class Island : MonoBehaviour, IPointerClickHandler
     public Tile[,] tiles; // 2D array to hold the tiles
 
     private IslandManager islandManager;
-
+    private bool isRaised; // Whether the island is raised or not
     public void Initialize(IslandManager manager)
     {
         islandManager = manager;
@@ -43,22 +43,11 @@ public class Island : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public bool HasStickmansInHighestColumn()
-    {
-        if (stickmans.Count > 0)
-        {
-            int highestColumnIndex = GetHighestIndexedColumn();
-            return tiles[highestColumnIndex, 0].HasStickman();
-        }
-
-        return false;
-    }
-    
-    public Stickman GetStickmanAtTile(int x, int z)
+    public Tile GetTileAt(int x, int z)
     {
         if (IsTileValid(x, z))
         {
-            return tiles[x, z].GetStickman();
+            return tiles[x, z];
         }
 
         return null;
@@ -80,18 +69,28 @@ public class Island : MonoBehaviour, IPointerClickHandler
         return stickmansInColumn;
     }
 
-    public void RemoveStickman(Stickman stickman)
+    public void RemoveStickman(Stickman stickman, Tile tile)
     {
+        tile.SetOccupied(false);
         stickmans.Remove(stickman);
     }
+    
+    public Stickman GetStickmanAtTile(int x, int z)
+    {
+        if (IsTileValid(x, z))
+        {
+            return tiles[x, z].GetStickman();
+        }
 
+        return null;
+    }
     public int GetHighestIndexedColumn()
     {
         for (int columnIndex = size - 1; columnIndex >= 0; columnIndex--)
         {
             for (int rowIndex = 0; rowIndex < size; rowIndex++)
             {
-                if (tiles[columnIndex, rowIndex].HasStickman())
+                if (tiles[columnIndex, rowIndex].HasStickman)
                 {
                     return columnIndex;
                 }
@@ -101,13 +100,14 @@ public class Island : MonoBehaviour, IPointerClickHandler
         return -1; // No stickmans found on the island
     }
 
-    public int GetFirstAvailableColumn()
+    public int GetLowestIndexedColumn()
     {
         for (int columnIndex = 0; columnIndex < size; columnIndex++)
         {
             for (int rowIndex = 0; rowIndex < size; rowIndex++)
             {
-                if (!tiles[columnIndex, rowIndex].HasStickman())
+                Tile currentTile = tiles[columnIndex, rowIndex];
+                if (!currentTile.IsOccupied && !currentTile.HasStickman)
                 {
                     return columnIndex;
                 }
@@ -117,30 +117,22 @@ public class Island : MonoBehaviour, IPointerClickHandler
         return -1; // No available column found on the island
     }
 
-    public int GetFirstAvailableRow()
-    {
-        for (int rowIndex = 0; rowIndex < size; rowIndex++)
-        {
-            for (int columnIndex = 0; columnIndex < size; columnIndex++)
-            {
-                if (!tiles[columnIndex, rowIndex].HasStickman())
-                {
-                    return rowIndex;
-                }
-            }
-        }
-
-        return -1; // No available row found on the island
-    }
-
     public void RaiseIsland()
     {
-        transform.position += new Vector3(0, raisedHeight, 0);
+        if (!isRaised)
+        {
+            transform.position += new Vector3(0, raisedHeight, 0);
+            isRaised = true;
+        }
     }
 
     public void LowerIsland()
     {
-        transform.position -= new Vector3(0, raisedHeight, 0);
+        if (isRaised)
+        {
+            transform.position -= new Vector3(0, raisedHeight, 0);
+            isRaised = false;
+        }
     }
 
     private bool IsTileValid(int x, int z)

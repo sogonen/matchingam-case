@@ -7,44 +7,44 @@ public class BridgeManager
 
     public void DrawBridgeBetweenIslands(Island island1, Island island2)
     {
-        Vector3 bridgePosition = (island1.transform.position + island2.transform.position) / 2f;
-
-        // Calculate the scale and rotation of the bridge
-        float bridgeLength = Vector3.Distance(island1.transform.position, island2.transform.position);
-        Quaternion bridgeRotation = Quaternion.LookRotation(island2.transform.position - island1.transform.position);
-        
-        // Instantiate a bridge prefab at the calculated position and rotation
-        //Bridge bridge = GameObject.Instantiate(BridgePrefab, bridgePosition, bridgeRotation);
-        
-        // Scale the bridge to match its length
-        //Vector3 bridgeScale = bridge.transform.localScale;
-        //bridgeScale.z = bridgeLength;
-        //bridge.transform.localScale = bridgeScale;
-
-        //bridges.Add(bridge);
+        Bridge bridge = new Bridge(island1, island2);
+        bridge.DrawBridge();
+        bridges.Add(bridge);
+    }
+    
+    public List<Vector3> GetBridgePath(Island island1, Island island2)
+    {
+        foreach (Bridge bridge in bridges)
+        {
+            if (bridge.Island1 == island1 && bridge.Island2 == island2 || bridge.Island1 == island2 && bridge.Island2 == island1)
+            {
+                return bridge.BridgePath;
+            }
+        }
+        return null;
+    }
+    
+    public void RemoveBridge(Island island1, Island island2)
+    {
+        foreach (Bridge bridge in bridges)
+        {
+            if (bridge.Island1 == island1 && bridge.Island2 == island2 || bridge.Island1 == island2 && bridge.Island2 == island1)
+            {
+                bridge.DestroyBridge();
+                bridges.Remove(bridge);
+                island1.LowerIsland();
+                island2.LowerIsland();
+                return;
+            }
+        }
     }
 
-    public void MoveStickmansToNextIsland(Island clickedIsland, Island currentIsland)
+    public void ClearBridges()
     {
-        if (clickedIsland == currentIsland || !currentIsland.HasStickmansInHighestColumn())
-            return;
-
-        int columnIndex = currentIsland.GetHighestIndexedColumn();
-        List<Stickman> stickmansToMove = currentIsland.GetStickmansInColumn(columnIndex);
-
-        if (stickmansToMove.Count == 0)
-            return;
-
-        int targetColumn = clickedIsland.GetFirstAvailableColumn();
-        int targetRow = clickedIsland.GetFirstAvailableRow();
-
-        foreach (Stickman stickman in stickmansToMove)
+        foreach (Bridge bridge in bridges)
         {
-            clickedIsland.AddStickmanToTile(stickman, targetColumn, targetRow);
-            currentIsland.RemoveStickman(stickman);
-            targetRow++;
+            bridge.DestroyBridge();
         }
-
-        DrawBridgeBetweenIslands(clickedIsland, currentIsland);
+        bridges.Clear();
     }
 }

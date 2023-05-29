@@ -75,7 +75,7 @@ public class LevelManager
                 {
                     // Get a Stickman from the pool with the specified color
                     var stickman = PoolManager.Instance.GetStickmanFromPool(columnColor);
-
+                    
                     // Add the Stickman to the tile in the island
                     if (stickman != null)
                         island.AddStickmanToTile(stickman, islandColumnIndex, rowIndex);
