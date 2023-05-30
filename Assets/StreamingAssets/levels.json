@@ -1,0 +1,44 @@
+{
+  "levels": [
+    {
+      "islandNumbers": 2,
+      "stickmanSetNumbers": 1
+    },
+    {
+      "islandNumbers": 3,
+      "stickmanSetNumbers": 2
+    },
+    {
+      "islandNumbers": 5,
+      "stickmanSetNumbers": 3
+    },
+    {
+      "islandNumbers": 5,
+      "stickmanSetNumbers": 3
+    },
+    {
+      "islandNumbers": 5,
+      "stickmanSetNumbers": 3
+    },
+    {
+      "islandNumbers": 6,
+      "stickmanSetNumbers": 4
+    },
+    {
+      "islandNumbers": 8,
+      "stickmanSetNumbers": 5
+    },
+    {
+      "islandNumbers": 6,
+      "stickmanSetNumbers": 4
+    },
+    {
+      "islandNumbers": 6,
+      "stickmanSetNumbers": 4
+    },
+    {
+      "islandNumbers": 6,
+      "stickmanSetNumbers": 4
+    }
+  ]
+}

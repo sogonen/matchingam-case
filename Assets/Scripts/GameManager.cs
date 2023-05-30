@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     public Island islandPrefab; // Assign this in the Inspector
     public IslandManager islandManager;
-    public int numberOfIslands = 3; // Number of islands to spawn
-    public int numberOfStickmanColors = 2; // Number of sets of stickmen to spawn
     public List<Island> islands = new();
     public BridgeManager bridgeManager;
     public LevelManager levelManager;
+    public UIScreenManager screenManager;
+    public UIScreen levelCompleteScreen;
+    [FormerlySerializedAs("level")] public int currentLevel = 1;
     public static GameManager Instance { get; private set; }
-    
     private Camera mainCamera;
 
     private void Awake()
@@ -24,15 +25,16 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
+        currentLevel = PlayerPrefs.GetInt("currentLevel", 1);
     }
 
     private void Start()
     {
         bridgeManager = new BridgeManager();
-        islandManager = new IslandManager(bridgeManager);
-        levelManager = new LevelManager(numberOfIslands, numberOfStickmanColors);
-
-        StartNewLevel(1);
+        levelManager = new LevelManager();
+        islandManager = new IslandManager(bridgeManager, levelManager);
+        
+        StartLevel();
     }
 
     public void SpawnIslands(int number)
@@ -86,14 +88,30 @@ public class GameManager : MonoBehaviour
 
         return shuffledIslands;
     }
-
-    public void StartNewLevel(int level)
+    
+    public void NextLevel()
     {
-        // Clear existing islands and stickmans
-        ClearLevel();
+        screenManager.DequeueScreen();
+        StartLevel();
+    }
 
-        // Generate the level using the LevelManager
-        levelManager.GenerateLevel(this, level);
+    public void StartLevel()
+    {
+        screenManager.SetLevelText(currentLevel);
+        ClearLevel();
+        levelManager.GenerateNextLevel(this,currentLevel-1);
+    }
+
+    public void LevelCompleted()
+    {
+        currentLevel++;
+        PlayerPrefs.SetInt("currentLevel", currentLevel);
+        ShowLevelCompleteScreen();
+    }
+    
+    private void ShowLevelCompleteScreen()
+    {
+        screenManager.EnqueueScreen(levelCompleteScreen);
     }
 
     private void ClearLevel()

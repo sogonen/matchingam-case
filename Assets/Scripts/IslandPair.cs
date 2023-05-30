@@ -1,11 +1,12 @@
 public class IslandPair
 {
-    public Island Island1 { get; private set; }
-    public Island Island2 { get; private set; }
+    public Island FirstIsland { get; private set; }
+    public Island SecondIsland { get; private set; }
 
-    public IslandPair(Island island1, Island island2)
+
+    public IslandPair(Island firstIsland, Island secondIsland)
     {
-        Island1 = island1;
-        Island2 = island2;
+        FirstIsland = firstIsland;
+        SecondIsland = secondIsland;
     }
 }

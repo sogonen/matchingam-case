@@ -3,19 +3,13 @@ using UnityEngine;
 
 public class Bridge
 {
-    private Island island1;
-    private Island island2;
+    private IslandPair islandPair;
     private GameObject bridgeObject;
     private List<Vector3> bridgePath;
     
-    public Island Island1
+    public IslandPair IslandPair
     {
-        get { return island1; }
-    }
-    
-    public Island Island2
-    {
-        get { return island2; }
+        get { return islandPair; }
     }
     
     public List<Vector3> BridgePath
@@ -23,10 +17,9 @@ public class Bridge
         get { return bridgePath; }
     }
     
-    public Bridge(Island island1, Island island2)
+    public Bridge(IslandPair islandPair)
     {
-        this.island1 = island1;
-        this.island2 = island2;
+        this.islandPair = islandPair;
         bridgePath = new List<Vector3>();
     }
 
@@ -39,30 +32,30 @@ public class Bridge
     private void CalculateBridgePath()
     {
         bridgePath.Clear();
-
+        
         // Calculate the direction and distance between the islands
-        Vector3 bridgeDirection = island2.transform.position - island1.transform.position;
+        Vector3 bridgeDirection = islandPair.SecondIsland.transform.position - islandPair.FirstIsland.transform.position;
         bridgeDirection.y = 0f; // Ignore vertical difference
         float bridgeDistance = bridgeDirection.magnitude;
 
         // Calculate the number of segments based on the distance
-        int numSegments = Mathf.CeilToInt(bridgeDistance / island1.tileSize);
+        int numSegments = Mathf.CeilToInt(bridgeDistance / islandPair.FirstIsland.tileSize);
 
         // Calculate the step size for each segment
         float stepSize = bridgeDistance / numSegments;
         Vector3 step = bridgeDirection.normalized * stepSize;
 
         // Calculate the start and end points of the bridge
-        Vector3 startPoint = island1.GetTileAt(3, 1).transform.position + island1.GetTileAt(3, 1).transform.right * island1.tileSize * 0.5f;
-        Vector3 endPoint = island2.GetTileAt(3, 1).transform.position + island2.GetTileAt(3, 1).transform.right * island2.tileSize * 0.5f;
+        Vector3 startPoint = islandPair.FirstIsland.GetTileAt(3, 1).transform.position + islandPair.FirstIsland.GetTileAt(3, 1).transform.right * islandPair.FirstIsland.tileSize * 0.5f;
+        Vector3 endPoint = islandPair.SecondIsland.GetTileAt(3, 1).transform.position + islandPair.SecondIsland.GetTileAt(3, 1).transform.right * islandPair.SecondIsland.tileSize * 0.5f;
 
         // Add the start point to the bridge path
         bridgePath.Add(startPoint);
 
         // Calculate the control points for the Bezier curve, adjusting the height to add a curve to the bridge
         float heightMultiplier = 0f; // Adjust this value to make the bridge more or less curved
-        Vector3 controlPoint1 = startPoint + island1.transform.right * stepSize * 5f + Vector3.up * stepSize * heightMultiplier;
-        Vector3 controlPoint2 = endPoint - island2.transform.right * stepSize * -5 + Vector3.up * stepSize * heightMultiplier;
+        Vector3 controlPoint1 = startPoint + islandPair.FirstIsland.transform.right * stepSize * 5f + Vector3.up * stepSize * heightMultiplier;
+        Vector3 controlPoint2 = endPoint - islandPair.SecondIsland.transform.right * stepSize * -5 + Vector3.up * stepSize * heightMultiplier;
 
         // Add intermediate positions along the bridge path using a Bezier curve
         for (int i = 1; i < numSegments; i++)

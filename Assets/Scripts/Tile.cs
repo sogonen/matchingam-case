@@ -5,14 +5,9 @@ public class Tile : MonoBehaviour
     public Stickman currentStickman;
     public bool isOccupied;
     
-    public void SetStickman(Stickman stickman, Island island)
+    public void InitStickman(Stickman stickman, Island island)
     {
-        // If there's already a stickman here, destroy it
-        if (currentStickman != null)
-        {
-            PoolManager.Instance.ReturnStickmanToPool(currentStickman);
-        }
-        
+        isOccupied = true;
         // Set the new stickman and parent it to this tile
         currentStickman = stickman;
         stickman.transform.parent = transform;
@@ -25,6 +20,13 @@ public class Tile : MonoBehaviour
         stickman.transform.forward = targetForward;
     }
     
+    public void SetStickMan(Stickman stickman)
+    {
+        isOccupied = true;
+        currentStickman = stickman;
+        stickman.transform.parent = transform;
+    }
+
     public void SetOccupied(bool occupied)
     {
         isOccupied = occupied;

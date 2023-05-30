@@ -11,9 +11,9 @@ public class Stickman : MonoBehaviour
     private List<Vector3> currentPath; // Current walking path
     private int currentPathIndex; // Current index in the walking path
 
-    private Island oldIsland;
-    private Island newIsland;
+    private IslandPair islandPair;
     private BridgeManager bridgeManager;
+    private LevelManager levelManager;
     private int[] currentTile;
 
     public StickmanColor Color
@@ -32,7 +32,7 @@ public class Stickman : MonoBehaviour
         _renderer = GetComponent<SkinnedMeshRenderer>();
     }
 
-    public void StartWalking(List<Vector3> path, BridgeManager bridgeManager, Island oldIsland, Island newIsland, int tileX, int tileZ)
+    public void StartWalking(List<Vector3> path, BridgeManager bridgeManager, LevelManager levelManager, IslandPair islandPair, int tileX, int tileZ)
     {
         animator.SetBool("Walking", true);
         currentPath = path;
@@ -40,8 +40,8 @@ public class Stickman : MonoBehaviour
         currentTile[0] = tileX;
         currentTile[1] = tileZ;
         this.bridgeManager = bridgeManager;
-        this.oldIsland = oldIsland;
-        this.newIsland = newIsland;
+        this.levelManager = levelManager;
+        this.islandPair = islandPair;
         // Start the walking coroutine
         StartCoroutine(WalkAlongPath());
     }
@@ -55,26 +55,20 @@ public class Stickman : MonoBehaviour
             {
                 // Move the stickman towards the target position
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, walkingSpeed * Time.deltaTime);
-                // Adjust the rotation to face the direction of movement
-                //Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
-                //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, walkingSpeed * 5f * Time.deltaTime);
 
                 yield return null;
             }
-
-            // Move to the next point in the path
+            
             currentPathIndex++;
         }
-
-        // Path complete, do any necessary cleanup
+        
         OnPathComplete();
     }
 
     private void OnPathComplete()
     {
-        // Path is complete, handle any necessary logic
         animator.SetBool("Walking", false);
-        newIsland.AddStickmanToTile(this, currentTile[0], currentTile[1]);
-        bridgeManager.RemoveBridge(oldIsland, newIsland);
+        bridgeManager.RemoveBridge(islandPair);
+        levelManager.IslandCompleted(islandPair.SecondIsland);
     }
 }

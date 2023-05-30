@@ -15,6 +15,7 @@ public class Island : MonoBehaviour, IPointerClickHandler
 
     private IslandManager islandManager;
     private bool isRaised; // Whether the island is raised or not
+    private bool isCompleted; // Whether the island is completed or not
     public void Initialize(IslandManager manager)
     {
         islandManager = manager;
@@ -32,13 +33,13 @@ public class Island : MonoBehaviour, IPointerClickHandler
             }
         }
     }
-
+    
     public void AddStickmanToTile(Stickman stickman, int x, int z)
     {
         if (IsTileValid(x, z))
         {
             var tile = tiles[x, z];
-            tile.SetStickman(stickman, this); // Pass the 'island' reference to 'SetStickman' method
+            tile.InitStickman(stickman, this); // Pass the 'island' reference to 'InitStickman' method
             stickmans.Add(stickman);
         }
     }
@@ -74,6 +75,22 @@ public class Island : MonoBehaviour, IPointerClickHandler
         tile.SetOccupied(false);
         stickmans.Remove(stickman);
     }
+
+    public List<Stickman> GetAllStickmen()
+    {
+        List<Stickman> stickmen = new List<Stickman>();
+
+        foreach (var tile in tiles)
+        {
+            if (tile.HasStickman)
+            {
+                Stickman stickman = tile.GetStickman();
+                stickmen.Add(stickman);
+            }
+        }
+
+        return stickmen;
+    }
     
     public Stickman GetStickmanAtTile(int x, int z)
     {
@@ -90,7 +107,8 @@ public class Island : MonoBehaviour, IPointerClickHandler
         {
             for (int rowIndex = 0; rowIndex < size; rowIndex++)
             {
-                if (tiles[columnIndex, rowIndex].HasStickman)
+                Tile currentTile = tiles[columnIndex, rowIndex];
+                if (currentTile.IsOccupied || currentTile.HasStickman)
                 {
                     return columnIndex;
                 }
@@ -124,6 +142,12 @@ public class Island : MonoBehaviour, IPointerClickHandler
             transform.position += new Vector3(0, raisedHeight, 0);
             isRaised = true;
         }
+    }
+    
+    public bool IsCompleted
+    {
+        set { isCompleted = value; }
+        get { return isCompleted; }
     }
 
     public void LowerIsland()

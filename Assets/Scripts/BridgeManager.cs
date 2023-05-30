@@ -5,18 +5,18 @@ public class BridgeManager
 {
     private List<Bridge> bridges = new List<Bridge>();
 
-    public void DrawBridgeBetweenIslands(Island island1, Island island2)
+    public void DrawBridgeBetweenIslands(IslandPair islandPair)
     {
-        Bridge bridge = new Bridge(island1, island2);
+        Bridge bridge = new Bridge(islandPair);
         bridge.DrawBridge();
         bridges.Add(bridge);
     }
     
-    public List<Vector3> GetBridgePath(Island island1, Island island2)
+    public List<Vector3> GetBridgePath(IslandPair islandPair)
     {
         foreach (Bridge bridge in bridges)
         {
-            if (bridge.Island1 == island1 && bridge.Island2 == island2 || bridge.Island1 == island2 && bridge.Island2 == island1)
+            if (bridge != null && bridge.IslandPair == islandPair)
             {
                 return bridge.BridgePath;
             }
@@ -24,16 +24,17 @@ public class BridgeManager
         return null;
     }
     
-    public void RemoveBridge(Island island1, Island island2)
+    public void RemoveBridge(IslandPair islandPair)
     {
         foreach (Bridge bridge in bridges)
         {
-            if (bridge.Island1 == island1 && bridge.Island2 == island2 || bridge.Island1 == island2 && bridge.Island2 == island1)
+            if (bridge.IslandPair == islandPair)
             {
-                bridge.DestroyBridge();
                 bridges.Remove(bridge);
-                island1.LowerIsland();
-                island2.LowerIsland();
+                bridge.DestroyBridge();
+                islandPair.FirstIsland.LowerIsland();
+                islandPair.SecondIsland.LowerIsland();
+                
                 return;
             }
         }

@@ -1,30 +1,67 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 
 public class LevelManager
 {
-    private readonly int islandNumbers;
-    private readonly int stickmanSetNumbers;
-
-    public LevelManager(int islandNumbers, int stickmanSetNumbers)
+    private List<LevelData> levels;
+    private GameManager gameManager;
+    private int completedIslandCount = 0;
+    private int islandNumbers;
+    private int stickmanSetNumbers;
+    public LevelManager()
     {
-        this.islandNumbers = islandNumbers;
-        this.stickmanSetNumbers = stickmanSetNumbers;
+        if (levels == null)
+        {
+            levels = LoadLevelsFromJSON();
+        }
+    }
+    
+    private List<LevelData> LoadLevelsFromJSON()
+    {
+        List<LevelData> levelDataList = new List<LevelData>();
+
+        string filePath = Path.Combine(Application.streamingAssetsPath, "levels.json");
+
+        if (File.Exists(filePath))
+        {
+            string jsonData = File.ReadAllText(filePath);
+            LevelDataList levelDataListContainer = JsonUtility.FromJson<LevelDataList>(jsonData);
+
+            if (levelDataListContainer != null)
+            {
+                levelDataList = levelDataListContainer.levels;
+            }
+            else
+            {
+                Debug.LogError("Failed to parse currentLevel data from JSON: " + filePath);
+            }
+        }
+        else
+        {
+            Debug.LogError("Level data file not found: " + filePath);
+        }
+
+        return levelDataList;
     }
 
-    public void GenerateLevel(GameManager gameManager, int level)
+    public void GenerateNextLevel(GameManager gameManager,int levelIndex)
     {
+        islandNumbers = levels[levelIndex].islandNumbers;
+        stickmanSetNumbers = levels[levelIndex].stickmanSetNumbers;
+        
+        this.gameManager = gameManager;
         // Create islands
-        gameManager.SpawnIslands(islandNumbers);
+        this.gameManager.SpawnIslands(islandNumbers);
 
-        // Set the stickman colors for this level
+        // Set the stickman colors for this currentLevel
         var stickmanColors = ColorManager.Instance.GetStickmanColors(stickmanSetNumbers);
 
         // Shuffle the islands randomly
         var shuffledIslands = gameManager.GetShuffledIslands();
 
-        // Determine the number of stickman colors used in this level
+        // Determine the number of stickman colors used in this currentLevel
         var usedColorCount = Mathf.Min(stickmanSetNumbers, stickmanColors.Count);
 
         // Determine the number of columns needed based on the number of stickman colors
@@ -83,4 +120,48 @@ public class LevelManager
             }
         }
     }
+    
+    public void IslandCompleted(Island currentIsland)
+    {
+        // Get the stickmen on the island
+        List<Stickman> stickmen = currentIsland.GetAllStickmen();
+
+        // Check if all stickmen on the island have the same color
+        if (stickmen.Count == 16 && stickmen.All(s => s.Color == stickmen[0].Color))
+        {
+            AddCompletedIslandCount();
+        }
+    }
+
+    public void IsLevelCompleted()
+    {
+        if(completedIslandCount == stickmanSetNumbers)
+        {
+            gameManager.LevelCompleted();
+        }
+    }
+    
+    public void AddCompletedIslandCount()
+    {
+        completedIslandCount++;
+        IsLevelCompleted();
+    }
+    
+    public int CompletedIslandCount
+    {
+        get { return completedIslandCount; }
+    }
+}
+
+[System.Serializable]
+public class LevelData
+{
+    public int islandNumbers;
+    public int stickmanSetNumbers;
+}
+
+[System.Serializable]
+public class LevelDataList
+{
+    public List<LevelData> levels;
 }

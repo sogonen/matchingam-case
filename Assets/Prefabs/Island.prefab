@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3932250422119294095}
   - component: {fileID: 3932250422119294094}
   - component: {fileID: 6743252674030375106}
-  - component: {fileID: -6265094123303984232}
   m_Layer: 0
   m_Name: Island
   m_TagString: Untagged
@@ -63,15 +62,3 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4, y: 1.2, z: 4}
   m_Center: {x: 0, y: 0.6, z: 0}
---- !u!114 &-6265094123303984232
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3932250422119294092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e30c1419e6f4ff47b6f042081fdc677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
