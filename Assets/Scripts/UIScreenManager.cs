@@ -5,23 +5,20 @@ using UnityEngine;
 public class UIScreenManager : MonoBehaviour
 {
     public TextMeshProUGUI levelText;
-    private Queue<UIScreen> screenQueue = new Queue<UIScreen>();
     private UIScreen currentScreen;
+    private readonly Queue<UIScreen> screenQueue = new();
 
     public void EnqueueScreen(UIScreen screen)
     {
         screenQueue.Enqueue(screen);
 
-        if (currentScreen == null)
-        {
-            ShowNextScreen();
-        }
+        if (currentScreen == null) ShowNextScreen();
     }
 
     public void DequeueScreen()
     {
         screenQueue.Dequeue();
-        
+
         if (currentScreen != null)
         {
             HideCurrentScreen();
@@ -46,9 +43,14 @@ public class UIScreenManager : MonoBehaviour
             currentScreen = null;
         }
     }
-    
+
     public void SetLevelText(int level)
     {
         levelText.text = "Level " + level;
+    }
+
+    public bool IsScreenQueueEmpty()
+    {
+        return screenQueue.Count == 0;
     }
 }

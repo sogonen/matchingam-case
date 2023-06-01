@@ -1,43 +1,555 @@
 {
   "levels": [
     {
+      "no": 1,
+      "islands": [
+        {
+          "islandPattern": [
+            5,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            5,
+            5,
+            -1
+          ]
+        }
+      ],
+      "ad": -1,
       "islandNumbers": 2,
       "stickmanSetNumbers": 1
     },
     {
+      "no": 2,
+      "islands": [
+        {
+          "islandPattern": [
+            2,
+            5,
+            2,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            2,
+            5,
+            2
+          ]
+        }
+      ],
+      "ad": -1,
       "islandNumbers": 3,
       "stickmanSetNumbers": 2
     },
     {
-      "islandNumbers": 5,
-      "stickmanSetNumbers": 3
-    },
-    {
-      "islandNumbers": 5,
-      "stickmanSetNumbers": 3
-    },
-    {
-      "islandNumbers": 5,
-      "stickmanSetNumbers": 3
-    },
-    {
+      "no": 3,
+      "islands": [
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            0,
+            2,
+            5,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            2,
+            5,
+            0,
+            2
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            5,
+            0,
+            2
+          ]
+        }
+      ],
+      "ad": 1,
       "islandNumbers": 6,
+      "stickmanSetNumbers": 3
+    },
+    {
+      "no": 4,
+      "islands": [
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            5,
+            0,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            2,
+            0,
+            5,
+            2
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            0,
+            2,
+            2
+          ]
+        }
+      ],
+      "ad": 1,
+      "islandNumbers": 6,
+      "stickmanSetNumbers": 3
+    },
+    {
+      "no": 5,
+      "islands": [
+        {
+          "islandPattern": [
+            3,
+            6,
+            3,
+            3
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            3,
+            6,
+            6
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            5,
+            6,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        }
+      ],
+      "ad": 1,
+      "islandNumbers": 6,
+      "stickmanSetNumbers": 3
+    },
+    {
+      "no": 6,
+      "islands": [
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            0,
+            5,
+            0,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            5,
+            6,
+            2
+          ]
+        },
+        {
+          "islandPattern": [
+            2,
+            2,
+            6,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            6,
+            6,
+            2,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        }
+      ],
+      "ad": 0,
+      "islandNumbers": 7,
       "stickmanSetNumbers": 4
     },
     {
-      "islandNumbers": 8,
+      "no": 7,
+      "islands": [
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            2,
+            5,
+            2,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            6,
+            6,
+            2,
+            6
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            0,
+            4,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            4,
+            6,
+            0,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            2,
+            4,
+            4
+          ]
+        }
+      ],
+      "ad": 0,
+      "islandNumbers": 9,
       "stickmanSetNumbers": 5
     },
     {
+      "no": 8,
+      "islands": [
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            6,
+            2,
+            6,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            0,
+            0,
+            2,
+            2
+          ]
+        },
+        {
+          "islandPattern": [
+            0,
+            6,
+            2,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            6,
+            0,
+            5
+          ]
+        }
+      ],
+      "ad": 0,
+      "islandNumbers": 7,
+      "stickmanSetNumbers": 4
+    },
+    {
+      "no": 9,
+      "islands": [
+        {
+          "islandPattern": [
+            1,
+            5,
+            4,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            7,
+            7,
+            4,
+            4
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            1,
+            1,
+            7
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            1,
+            7,
+            5,
+            4
+          ]
+        }
+      ],
+      "ad": 1,
       "islandNumbers": 6,
       "stickmanSetNumbers": 4
     },
     {
-      "islandNumbers": 6,
-      "stickmanSetNumbers": 4
-    },
-    {
-      "islandNumbers": 6,
+      "no": 10,
+      "islands": [
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            0,
+            0,
+            1,
+            5
+          ]
+        },
+        {
+          "islandPattern": [
+            1,
+            2,
+            2,
+            0
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        },
+        {
+          "islandPattern": [
+            5,
+            5,
+            2,
+            2
+          ]
+        }
+      ],
+      "ad": -1,
+      "islandNumbers": 7,
       "stickmanSetNumbers": 4
     }
   ]

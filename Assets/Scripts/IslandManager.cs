@@ -1,13 +1,14 @@
+using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class IslandManager
 {
-    private Queue<IslandPair> activeIslandPairs = new Queue<IslandPair>();
-    private BridgeManager bridgeManager;
-    private LevelManager levelManager;
+    private readonly Queue<IslandPair> activeIslandPairs = new();
+    private readonly BridgeManager bridgeManager;
+    private readonly LevelManager levelManager;
+    private readonly Dictionary<IslandPair, int> movedStickManCount = new();
+
     public IslandManager(BridgeManager bridgeManager, LevelManager levelManager)
     {
         this.bridgeManager = bridgeManager;
@@ -16,20 +17,26 @@ public class IslandManager
 
     public void HandleIslandClick(Island clickedIsland)
     {
+        if (clickedIsland.IsAdIsland)
+        {
+            GameManager.Instance.ShowAdScreen();
+            return;
+        }
+
         if (activeIslandPairs.Count == 0)
         {
             // No active island pairs yet, create a new pair with the clicked island as the first island
             if (!clickedIsland.IsCompleted)
             {
                 activeIslandPairs.Enqueue(new IslandPair(clickedIsland, null));
-            RaiseIsland(clickedIsland);
+                RaiseIsland(clickedIsland);
             }
         }
-
-        else if (activeIslandPairs.Count > 0)
+        else
         {
             var firstPair = activeIslandPairs.Peek();
-            if (firstPair.SecondIsland == null && IsValidBridgeConnection(firstPair.FirstIsland, clickedIsland))
+            if (firstPair.SecondIsland == null && firstPair.FirstIsland != clickedIsland &&
+                IsValidBridgeConnection(firstPair.FirstIsland, clickedIsland))
             {
                 // Valid bridge connection, create a new pair with the first selected island and the clicked island
                 var bridgedPair = new IslandPair(firstPair.FirstIsland, clickedIsland);
@@ -38,89 +45,145 @@ public class IslandManager
                 bridgeManager.DrawBridgeBetweenIslands(bridgedPair);
                 MoveStickmansToNextIsland(bridgedPair);
             }
-            else if (firstPair.FirstIsland == clickedIsland)
-            {
-                // Clicked the first island again, remove the pair from the queue
-                activeIslandPairs.Dequeue();
-                LowerIsland(clickedIsland);
-            }
             else
             {
-                // Invalid bridge connection, remove the first island from the queue and add the clicked island
+                // Invalid bridge connection
                 activeIslandPairs.Dequeue();
                 LowerIsland(firstPair.FirstIsland);
             }
         }
     }
 
-    private IslandPair GetActivePairContainingIsland(Island island)
-    {
-        foreach (var pair in activeIslandPairs)
-        {
-            if (pair.FirstIsland == island || pair.SecondIsland == island)
-                return pair;
-        }
-        return null;
-    }
-
     private bool IsValidBridgeConnection(Island firstIsland, Island secondIsland)
     {
-        if (firstIsland.GetLowestIndexedColumn() == 0)
+        if (firstIsland.GetLowestIndexedColumn() == 0 || secondIsland.GetHighestIndexedColumn() == secondIsland.size - 1
+                                                      || bridgeManager.CheckReverseBridge(firstIsland, secondIsland)
+                                                      || !firstIsland.isReadyToSelect
+                                                      || secondIsland.IsAdIsland)
             return false;
-        
-        // Check if the highest filled column on the second island has the same color as the current column on the first island
-        int highestColumnIndex = firstIsland.GetHighestIndexedColumn();
-        int lowestColumnIndex = secondIsland.GetLowestIndexedColumn();
+
+        var highestColumnIndex = firstIsland.GetHighestIndexedColumn();
+        var lowestColumnIndex = secondIsland.GetLowestIndexedColumn();
 
         if (highestColumnIndex >= 0 && lowestColumnIndex > 0)
         {
-            StickmanColor highestColumnColor = firstIsland.GetStickmanAtTile(highestColumnIndex, 0).Color;
-            StickmanColor lowestColumnColor = secondIsland.GetStickmanAtTile(lowestColumnIndex-1, 0).Color;
-            if ((highestColumnColor != lowestColumnColor))
+            var highestColumnColor = firstIsland.GetStickmanAtTile(highestColumnIndex, 0).Color;
+            var lowestColumnColor = secondIsland.GetStickmanAtTile(lowestColumnIndex - 1, 0).Color;
+            if (highestColumnColor != lowestColumnColor)
             {
                 LowerIsland(firstIsland);
                 LowerIsland(secondIsland);
                 return false;
             }
         }
+
         return true;
     }
 
     private void MoveStickmansToNextIsland(IslandPair islandPair)
     {
+        var bridgePath = bridgeManager.GetBridgePath(islandPair);
         // Get the highest indexed column in the first island
-        int highestColumnIndex = islandPair.FirstIsland.GetHighestIndexedColumn();
-        int lowestColumnIndex = islandPair.SecondIsland.GetLowestIndexedColumn();
+        var highestColumnIndex = islandPair.FirstIsland.GetHighestIndexedColumn();
+        // Get the lowest indexed column in the second island
+        var lowestColumnIndex = islandPair.SecondIsland.GetLowestIndexedColumn();
+        // Calculate how many columns we need to move for the same colored stickmans to be on the same column
+        var columnsToMove = CheckColumnsToMove(islandPair, highestColumnIndex, lowestColumnIndex);
 
-        // Get the stickmans from the highest column in the first island
-        List<Stickman> stickmansToMove = islandPair.FirstIsland.GetStickmansInColumn(highestColumnIndex);
+        movedStickManCount.Add(islandPair, 0);
 
-        List<Vector3> bridgePath = bridgeManager.GetBridgePath(islandPair);
-        
-        for(int i = 0; i < stickmansToMove.Count; i++)
+        float moveStartTime = 0;
+
+        for (var i = 0; i < columnsToMove; i++)
         {
-            Stickman stickman = stickmansToMove[i];
-            Tile startTile = islandPair.FirstIsland.tiles[highestColumnIndex, i];
-            Tile endTile = islandPair.SecondIsland.tiles[lowestColumnIndex, i];
-            
-            // Calculate the path for the stickman to walk on the bridge
-            List<Vector3> path = new List<Vector3>();
-            path.Add(startTile.transform.position);
-            path.AddRange(bridgePath);
-            path.Add(endTile.transform.position);
-            stickman.StartWalking(path, bridgeManager, levelManager, islandPair, lowestColumnIndex , i);
-            islandPair.FirstIsland.RemoveStickman(stickman, startTile);
-            endTile.SetStickMan(stickman);
+            // Move the stickmans in the column
+            islandPair.FirstIsland.StartCoroutine(MoveColumn(islandPair, bridgePath, highestColumnIndex,
+                lowestColumnIndex, moveStartTime));
+            moveStartTime = i * 0.1f;
+            highestColumnIndex--;
+            lowestColumnIndex++;
         }
     }
 
-    private void RaiseIsland(Island island)
+    public IEnumerator MoveColumn(IslandPair islandPair, List<Vector3> bridgePath, int from, int to,
+        float moveStartTime)
     {
-        island.RaiseIsland();
+        var stickmansToMove = islandPair.FirstIsland.GetStickmansInColumn(from);
+        for (var i = 0; i < stickmansToMove.Count; i++)
+        {
+            var moveTime = moveStartTime + i * 0.05f;
+            yield return new WaitForSeconds(moveTime);
+            var stickman = stickmansToMove[i];
+            var startTile = islandPair.FirstIsland.tiles[from, i];
+            var endTile = islandPair.SecondIsland.tiles[to, i];
+
+            // Calculate the path for the stickman to walk on the bridge
+            var path = new List<Vector3>();
+            path.Add(startTile.transform.position);
+            path.AddRange(bridgePath);
+            path.Add(endTile.transform.position);
+            stickman.Run(path, this, levelManager, islandPair, to, i);
+            islandPair.FirstIsland.RemoveStickman(stickman, startTile);
+            endTile.SetStickMan(stickman);
+            movedStickManCount[islandPair]++;
+            islandPair.SecondIsland.isReadyToSelect = false;
+        }
     }
 
-    private void LowerIsland(Island island)
+    private int CheckColumnsToMove(IslandPair islandPair, int highestColumnIndex, int lowestColumnIndex)
     {
-        island.LowerIsland();
+        var columnCount = 0;
+        var colorToMove = islandPair.FirstIsland.GetStickmanAtTile(highestColumnIndex, 0).Color;
+
+        var j = lowestColumnIndex;
+        for (var i = highestColumnIndex; i >= 0; i--)
+        {
+            if (j == islandPair.SecondIsland.size) break;
+
+            if (islandPair.FirstIsland.GetStickmanAtTile(i, 0).Color == colorToMove &&
+                !islandPair.SecondIsland.tiles[j, 0].HasStickman)
+            {
+                columnCount++;
+                j++;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return columnCount;
+    }
+
+    public void checkStickmanCount(IslandPair islandPair)
+    {
+        movedStickManCount[islandPair]--;
+        if (movedStickManCount[islandPair] == 0)
+        {
+            bridgeManager.RemoveBridge(islandPair);
+            movedStickManCount.Remove(islandPair);
+            islandPair.SecondIsland.isReadyToSelect = true;
+        }
+    }
+
+    public bool NoMovementInProgress()
+    {
+        return movedStickManCount.Count == 0;
+    }
+
+    public void RaiseIsland(Island island)
+    {
+        island.RaiseIsland(0.2f);
+    }
+
+    public void LowerIsland(Island island)
+    {
+        island.LowerIsland(0.2f);
+    }
+
+    public void Clear()
+    {
+        movedStickManCount.Clear();
+        activeIslandPairs.Clear();
     }
 }

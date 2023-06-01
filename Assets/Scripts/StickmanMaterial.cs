@@ -3,15 +3,14 @@ using UnityEngine;
 
 public enum StickmanColor
 {
-    Red,
-    Green,
-    Blue,
-    LightBlue,
-    Yellow,
-    Orange,
-    Black,
-    White,
-    None
+    Red = 0,
+    Green = 1,
+    Blue = 2,
+    LightBlue = 3,
+    Yellow = 4,
+    Orange = 5,
+    Black = 6,
+    White = 7
 }
 
 [Serializable]

@@ -1,19 +1,22 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     public Island islandPrefab; // Assign this in the Inspector
-    public IslandManager islandManager;
     public List<Island> islands = new();
-    public BridgeManager bridgeManager;
-    public LevelManager levelManager;
     public UIScreenManager screenManager;
     public UIScreen levelCompleteScreen;
-    [FormerlySerializedAs("level")] public int currentLevel = 1;
-    public static GameManager Instance { get; private set; }
+    public UIScreen adScreen;
+    public UIScreen settingsScreen;
+    public int currentLevel = 1;
+    public BridgeManager bridgeManager;
+    public IslandManager islandManager;
+    public LevelManager levelManager;
     private Camera mainCamera;
+    public static GameManager Instance { get; private set; }
 
     private void Awake()
     {
@@ -25,15 +28,16 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-        currentLevel = PlayerPrefs.GetInt("currentLevel", 1);
     }
 
     private void Start()
     {
+        currentLevel = PlayerPrefs.GetInt("currentLevel", 1);
+
         bridgeManager = new BridgeManager();
         levelManager = new LevelManager();
         islandManager = new IslandManager(bridgeManager, levelManager);
-        
+
         StartLevel();
     }
 
@@ -41,12 +45,12 @@ public class GameManager : MonoBehaviour
     {
         // Calculate the position of the islands based on the camera size
         var halfCameraHeight = mainCamera.orthographicSize;
-        var halfCameraWidth =  mainCamera.aspect * halfCameraHeight;
+        var halfCameraWidth = mainCamera.aspect * halfCameraHeight;
 
         // Calculate the number of islands for each side
         var numberOfIslandsOnEachSide = number / 2;
 
-        // Calculate the island spacing for each sidepho
+        // Calculate the island spacing for each side
         var islandSpacing = 2f * halfCameraHeight / (numberOfIslandsOnEachSide + 1);
 
         for (var i = 0; i < number; i++)
@@ -72,45 +76,79 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public List<Island> GetShuffledIslands()
-    {
-        var shuffledIslands = new List<Island>(islands);
-        var islandCount = shuffledIslands.Count;
+    // public List<Island> GetShuffledIslands()
+    // {
+    //     var shuffledIslands = new List<Island>(islands);
+    //     var islandCount = shuffledIslands.Count;
+    //
+    //     // Fisher-Yates shuffle algorithm
+    //     for (var i = 0; i < islandCount - 1; i++)
+    //     {
+    //         var randomIndex = Random.Range(i, islandCount);
+    //         var temp = shuffledIslands[randomIndex];
+    //         shuffledIslands[randomIndex] = shuffledIslands[i];
+    //         shuffledIslands[i] = temp;
+    //     }
+    //
+    //     return shuffledIslands;
+    // }
 
-        // Fisher-Yates shuffle algorithm
-        for (var i = 0; i < islandCount - 1; i++)
-        {
-            var randomIndex = Random.Range(i, islandCount);
-            var temp = shuffledIslands[randomIndex];
-            shuffledIslands[randomIndex] = shuffledIslands[i];
-            shuffledIslands[i] = temp;
-        }
-
-        return shuffledIslands;
-    }
-    
     public void NextLevel()
     {
         screenManager.DequeueScreen();
         StartLevel();
     }
 
+    public void ShowAdScreen()
+    {
+        screenManager.EnqueueScreen(adScreen);
+    }
+
+    public void ShowSettingsScreen()
+    {
+        screenManager.EnqueueScreen(settingsScreen);
+    }
+
     public void StartLevel()
     {
         screenManager.SetLevelText(currentLevel);
         ClearLevel();
-        levelManager.GenerateNextLevel(this,currentLevel-1);
+        levelManager.GenerateNextLevel(this, currentLevel - 1);
+    }
+
+    public void RestartLevel()
+    {
+        if (!screenManager.IsScreenQueueEmpty())
+            screenManager.DequeueScreen();
+        StartLevel();
+    }
+
+    public void UnlockAdIsland()
+    {
+        var adIsland = islands.Where(t => t.IsAdIsland).FirstOrDefault();
+        adIsland.Unlock();
+        screenManager.DequeueScreen();
+    }
+
+    public void ResetGame()
+    {
+        PlayerPrefs.SetInt("currentLevel", 1);
+        currentLevel = 1;
+        RestartLevel();
     }
 
     public void LevelCompleted()
     {
-        currentLevel++;
+        if (currentLevel < levelManager.LevelCount)
+            currentLevel++;
         PlayerPrefs.SetInt("currentLevel", currentLevel);
-        ShowLevelCompleteScreen();
+
+        StartCoroutine(ShowLevelCompleteScreen());
     }
-    
-    private void ShowLevelCompleteScreen()
+
+    private IEnumerator ShowLevelCompleteScreen()
     {
+        yield return new WaitUntil(() => islandManager.NoMovementInProgress());
         screenManager.EnqueueScreen(levelCompleteScreen);
     }
 
@@ -118,13 +156,19 @@ public class GameManager : MonoBehaviour
     {
         // Return Stickmans to the pool
         foreach (var island in islands)
-            for (var x = 0; x < island.size; x++)
-            for (var z = 0; z < island.size; z++)
+            // Return stickmen to the pool
+        foreach (var tile in island.tiles)
+            if (tile.HasStickman)
             {
-                var stickman = island.GetStickmanAtTile(x, z);
-                if (stickman != null) PoolManager.Instance.ReturnStickmanToPool(stickman);
+                var stickman = tile.GetStickman();
+                PoolManager.Instance.ReturnStickmanToPool(stickman);
             }
 
+        // Clear existing bridges
+        bridgeManager.ClearBridges();
+        // Reset the completed island count
+        levelManager.CompletedIslandCount = 0;
+        islandManager.Clear();
         // Clear existing islands
         foreach (var island in islands) Destroy(island.gameObject);
         islands.Clear();

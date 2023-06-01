@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UIScreen :MonoBehaviour
+public class UIScreen : MonoBehaviour
 {
     public GameObject screenObject;
     public bool isActive;

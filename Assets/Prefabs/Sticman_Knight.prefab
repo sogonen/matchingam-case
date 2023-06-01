@@ -751,7 +751,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 9571883b3b2cc4a4490fb1a9a4a57d30, type: 3}
   m_Controller: {fileID: 9100000, guid: 4319d59bebcb44e47ab711023ba7ac0c, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -774,7 +774,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _renderer: {fileID: 118947772184498748}
-  walkingSpeed: 5
+  walkingSpeed: 10
   animator: {fileID: 118947772180229346}
 --- !u!1 &118947772172935016
 GameObject:

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PoolManager : MonoBehaviour
 {
     public Stickman stickmanPrefab;
-
+    public GameObject adPrefab;
     private readonly Dictionary<StickmanColor, Queue<Stickman>> stickmanPool = new();
     public static PoolManager Instance { get; private set; }
 
@@ -59,7 +59,7 @@ public class PoolManager : MonoBehaviour
         var color = stickman.Color;
 
         if (!stickmanPool.ContainsKey(color)) stickmanPool[color] = new Queue<Stickman>();
-
+        stickman.transform.parent = transform;
         stickman.gameObject.SetActive(false);
         stickmanPool[color].Enqueue(stickman);
     }

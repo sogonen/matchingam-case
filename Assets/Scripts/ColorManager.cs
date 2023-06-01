@@ -30,6 +30,11 @@ public class ColorManager : MonoBehaviour
         return colors;
     }
 
+    public StickmanColor GetStickmanColor(int index)
+    {
+        return stickmanMaterials[index].color;
+    }
+
     public Material GetMaterialForColor(StickmanColor color)
     {
         foreach (var stickmanMaterial in stickmanMaterials)
